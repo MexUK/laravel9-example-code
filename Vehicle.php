@@ -7,8 +7,8 @@ use Illuminate\Support\Facades\DB;
 
 class Vehicle extends Model
 {
-    protected $table = 'vehicle';
-    protected $primaryKey = 'vehicleId';
+	protected $table = 'vehicle';
+	protected $primaryKey = 'vehicleId';
 
 	// create/destroy
 	public static function createVehicle(int $modelId):Vehicle|null
@@ -31,21 +31,21 @@ class Vehicle extends Model
 	}
 
 	// fetch
-    public static function getVehicle(int $vehicleId):Vehicle|null
-    {
-        return Vehicle::where('vehicleId', '=', $vehicleId)->first();
-    }
+	public static function getVehicle(int $vehicleId):Vehicle|null
+	{
+		return Vehicle::where('vehicleId', '=', $vehicleId)->first();
+	}
 
 	public function getModelCounts():Collection
-    {
-        return $this
-            ->select('vehicleModel', DB::raw('count(*) as vehicleModelCount'))
-            ->orderBy('vehicleModelCount', 'desc')
-            ->orderBy('vehicleModel', 'asc')
-            ->groupBy('vehicleModel')
-            ->get();
-    }
-	
+	{
+		return $this
+			->select('vehicleModel', DB::raw('count(*) as vehicleModelCount'))
+			->orderBy('vehicleModelCount', 'desc')
+			->orderBy('vehicleModel', 'asc')
+			->groupBy('vehicleModel')
+			->get();
+	}
+
 	// update
 	public function updateVehicle(int $vehicleId, array $newData):bool
 	{
