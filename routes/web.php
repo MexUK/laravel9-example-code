@@ -10,12 +10,16 @@ $redirectToShowAll = function():RedirectResponse
 };
 
 Route::get('/', $redirectToShowAll);
-Route::get('/vehicle/', $redirectToShowAll);
-Route::get('/vehicle/show/', $redirectToShowAll);
 
-Route::get('/vehicle/show/all', [VehicleController::class, 'showAll']);
-Route::get('/vehicle/show/{id}', [VehicleController::class, 'showOne']);
+Route::controller(VehicleController::class)->group(function() use ($redirectToShowAll)
+{
+    Route::get('/vehicle', $redirectToShowAll);
 
-Route::post('/vehicle/create/', [VehicleController::class, 'createOne']);
-Route::post('/vehicle/destroy/', [VehicleController::class, 'destroyOne']);
+    Route::post('/vehicle/create', 'createOne');
+    Route::post('/vehicle/destroy', 'destroyOne');
+
+    Route::get('/vehicle/show', $redirectToShowAll);
+    Route::get('/vehicle/show/all', 'showAll');
+    Route::get('/vehicle/show/{id}', 'showOne');
+});
 
