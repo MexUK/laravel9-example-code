@@ -47,7 +47,7 @@ class Vehicle extends Model
 	}
 
 	// update
-	public function updateVehicle(int $vehicleId, array $newData):bool
+	public static function updateVehicle(int $vehicleId, array $newData):bool
 	{
 		return Vehicle::where('vehicleId', '=', $vehicleId)
 			->update($newData);
