@@ -10,7 +10,33 @@ class Vehicle extends Model
     protected $table = 'vehicle';
     protected $primaryKey = 'vehicleId';
 
-    public function getModelCounts():Collection
+	// create/destroy
+	public static function createVehicle(int $modelId):Vehicle|null
+	{
+		$vehicle = new Vehicle();
+		$vehicle->vehicleModel = $modelId;
+		$vehicle->save();
+		return $vehicle;
+	}
+
+	public static function destroyVehicle(int $vehicleId):bool
+	{
+		$vehicle = Vehicle::find($vehicleId);
+		if($vehicle)
+		{
+			$vehicle->delete();
+			return true;
+		}
+		return false;
+	}
+
+	// fetch
+    public static function getVehicle(int $vehicleId):Vehicle|null
+    {
+        return Vehicle::where('vehicleId', '=', $vehicleId)->first();
+    }
+
+	public function getModelCounts():Collection
     {
         return $this
             ->select('vehicleModel', DB::raw('count(*) as vehicleModelCount'))
@@ -19,9 +45,11 @@ class Vehicle extends Model
             ->groupBy('vehicleModel')
             ->get();
     }
-
-    public static function getVehicle(int $id):Vehicle|null
-    {
-        return Vehicle::where('vehicleId', '=', $id)->first();
-    }
+	
+	// update
+	public function updateVehicle(int $vehicleId, array $newData):bool
+	{
+		return Vehicle::where('vehicleId', '=', $vehicleId)
+			->update($newData);
+	}
 };
