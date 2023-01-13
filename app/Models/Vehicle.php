@@ -6,6 +6,12 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
+enum EVehicleLockType:int
+{
+	case Unlocked	= 0;
+	case Locked		= 1;
+};
+
 class Vehicle extends Model
 {
 	protected $table = 'vehicle';
@@ -63,5 +69,11 @@ class Vehicle extends Model
 	{
 		return Vehicle::where('vehicleId', '=', $vehicleId)
 			->update($newData);
+	}
+
+	// vehicle attributes
+	public function getLockType():EVehicleLockType
+	{
+		return EVehicleLockType::from($this->vehicleLocked);
 	}
 };
