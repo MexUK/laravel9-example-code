@@ -20,7 +20,11 @@ class VehicleController extends Controller
 			'posZ' => 'required|numeric|between:-20000.0,20000.0',
 			'heading' => 'required|numeric|between:-'.pi().','.pi()
 		], [
-			'name.required' => 'Model ID is required.'
+			'modelId.required' => 'Model ID is required.',
+			'posX.required' => 'X position is required.',
+			'posY.required' => 'Y position is required.',
+			'posZ.required' => 'Z position is required.',
+			'heading.required' => 'Heading is required.'
 		]);
 		if($validator->fails())
 			return view('vehicle.create.invalid');
@@ -63,10 +67,10 @@ class VehicleController extends Controller
 		if(!Vehicle::isVehicleId($vehicleId))
 			return view('vehicle.destroy.invalid');
 		
-		if(Vehicle::destroyVehicle($vehicleId))
-			return view('vehicle.destroy.success');
-		else
+		if(!Vehicle::destroyVehicle($vehicleId))
 			return view('vehicle.destroy.failed');
+		
+		return view('vehicle.destroy.success');
 	}
 
 	// fetch
