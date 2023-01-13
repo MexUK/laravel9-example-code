@@ -23,6 +23,6 @@ Route::get('/vehicle/show/', [VehicleController::class, 'showAll']);
 Route::get('/vehicle/show/all', [VehicleController::class, 'showAll']);
 Route::get('/vehicle/show/{id}', [VehicleController::class, 'showOne']);
 
-Route::get('/vehicle/create/', [VehicleController::class, 'createOne']);
-Route::get('/vehicle/destroy/', [VehicleController::class, 'destroyOne']);
+Route::post('/vehicle/create/', [VehicleController::class, 'createOne']);
+Route::post('/vehicle/destroy/', [VehicleController::class, 'destroyOne']);
 
