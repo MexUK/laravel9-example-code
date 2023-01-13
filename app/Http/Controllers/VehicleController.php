@@ -14,7 +14,7 @@ class VehicleController extends Controller
 	public function createOne(Request $request):View
 	{
 		$validator = Validator::make($request->all(), [
-			'modelId' => 'required|int:100,150',
+			'modelId' => 'required|int|between:100,250',
 			'posX' => 'required|numeric|between:-20000.0,20000.0',
 			'posY' => 'required|numeric|between:-20000.0,20000.0',
 			'posZ' => 'required|numeric|between:-20000.0,20000.0',
