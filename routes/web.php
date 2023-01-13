@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\VehicleController;
+use Illuminate\Support\Facades\Route;
 
 $showAll = [VehicleController::class, 'showAll'];
 Route::get('/', $showAll);

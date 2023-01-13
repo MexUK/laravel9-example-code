@@ -6,6 +6,7 @@ use App\Models\Vec3;
 use App\Models\Vehicle;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class VehicleController extends Controller
@@ -14,7 +15,12 @@ class VehicleController extends Controller
 	public function createOne(Request $request):View
 	{
 		$validator = Validator::make($request->all(), [
-			'modelId' => 'required|int|between:100,250',
+			'modelId' => [
+				'required',
+				'int',
+				'between:90,100',
+				Rule::notIn([98])
+			],
 			'posX' => 'required|numeric|between:-20000.0,20000.0',
 			'posY' => 'required|numeric|between:-20000.0,20000.0',
 			'posZ' => 'required|numeric|between:-20000.0,20000.0',
