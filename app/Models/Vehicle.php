@@ -29,7 +29,7 @@ enum EVehicleModel:int
 	case j = 100;
 };
 
-class EntityModel extends Model
+abstract class EntityModel extends Model
 {
 	public function __construct()
 	{
@@ -47,7 +47,7 @@ class VehicleModel extends EntityModel
 	}
 };
 
-class Entity extends Model
+abstract class Entity extends Model
 {
 	public function __construct()
 	{
