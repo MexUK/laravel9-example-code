@@ -11,7 +11,7 @@ Route::get('/', function():RedirectResponse
 
 Route::fallback(function()
 {
-    return response()->view('/error/404', [], 404);;
+    return response()->view('/error/404', [], 404);
 });
 
 Route::controller(VehicleController::class)->group(function()
