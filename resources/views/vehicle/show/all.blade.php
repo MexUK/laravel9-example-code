@@ -11,5 +11,5 @@ echo '<br><br>';
 echo 'Vehicle Model IDs and Counts:<br>';
 foreach($vehicleModelCounts as &$row)
 {
-    echo $row->vehicleModel.' ('.$row->vehicleModelCount.')<br>';
+    echo ($row->vehicleModel <= 100 ? $row->model->id->value : $row->vehicleModel).' ('.$row->vehicleModelCount.')<br>';
 }

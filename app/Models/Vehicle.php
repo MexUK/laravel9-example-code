@@ -12,12 +12,56 @@ enum EVehicleLockType:int
 	case Locked		= 1;
 };
 
-class Vehicle extends Model
+enum EVehicleModel:int
+{
+	case Unknown = 0;
+	
+	case a = 90;
+	case b = 91;
+	case c = 92;
+	case d = 93;
+	case e = 94;
+	case f = 95;
+	case g = 96;
+	case h = 97;
+	
+	case i = 99;
+	case j = 100;
+};
+
+class EntityModel extends Model
+{
+	public function __construct()
+	{
+		parent::__construct();
+	}
+};
+
+class VehicleModel extends EntityModel
+{
+	public function __construct(
+		public EVehicleModel $id
+	)
+	{
+		parent::__construct();
+	}
+};
+
+class Entity extends Model
+{
+	public function __construct()
+	{
+		parent::__construct();
+	}
+};
+
+class Vehicle extends Entity
 {
 	protected $table = 'vehicle';
 	protected $primaryKey = 'vehicleId';
 	public $timestamps = false;
-	
+	protected $appends = ['model', 'lock'];
+
 	// create/destroy
 	public static function createVehicle(int $modelId, Vec3 &$position, Vec3 &$rotation):Vehicle|null
 	{
@@ -72,7 +116,13 @@ class Vehicle extends Model
 	}
 
 	// vehicle attributes
-	public function getLockType():EVehicleLockType
+	public function getModelAttribute():VehicleModel
+	{
+		$modelId = $this->vehicleModel <= EVehicleModel::j->value ? EVehicleModel::from($this->vehicleModel) : EVehicleModel::Unknown;
+		return new VehicleModel($modelId);
+	}
+
+	public function getLockAttribute():EVehicleLockType
 	{
 		return EVehicleLockType::from($this->vehicleLocked);
 	}
