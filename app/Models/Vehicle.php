@@ -13,7 +13,7 @@ class Vehicle extends Model
 	public $timestamps = false;
 	
 	// create/destroy
-	public static function createVehicle(int $modelId, Vec3 $position, Vec3 $rotation):Vehicle|null
+	public static function createVehicle(int $modelId, Vec3 &$position, Vec3 &$rotation):Vehicle|null
 	{
 		$vehicle = new Vehicle();
 		$vehicle->vehicleModel = $modelId;

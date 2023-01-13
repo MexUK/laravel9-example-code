@@ -24,17 +24,19 @@ class VehicleController extends Controller
 		]);
 		if($validator->fails())
 			return view('vehicle.create.invalid');
+		
+		$validated = $validator->validated();
 
-		$modelId = (int) $request->input('modelId');
+		$modelId = $validated['modelId'];
 		$position = new Vec3(
-			(float) $request->input('posX'),
-			(float) $request->input('posY'),
-			(float) $request->input('posZ')
+			$validated['posX'],
+			$validated['posY'],
+			$validated['posZ']
 		);
 		$rotation = new Vec3(
 			0.0,
 			0.0,
-			(float) $request->input('heading')
+			$validated['heading']
 		);
 
 		$vehicle = Vehicle::createVehicle($modelId, $position, $rotation);
