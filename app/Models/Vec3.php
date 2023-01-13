@@ -13,7 +13,7 @@ class Vec3
 	{
 	}
 
-	public function blank():Vec3
+	public static function blank():Vec3
 	{
 		return new Vec3(0.0, 0.0, 0.0);
 	}
