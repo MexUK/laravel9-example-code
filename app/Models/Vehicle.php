@@ -49,10 +49,9 @@ class Vehicle extends Model
 			->exists();
 	}
 
-	public function getModelCounts():Collection
+	public static function getModelCounts():Collection
 	{
-		return $this
-			->select('vehicleModel', DB::raw('count(*) as vehicleModelCount'))
+		return Vehicle::select('vehicleModel', DB::raw('count(*) as vehicleModelCount'))
 			->orderBy('vehicleModelCount', 'desc')
 			->orderBy('vehicleModel', 'asc')
 			->groupBy('vehicleModel')

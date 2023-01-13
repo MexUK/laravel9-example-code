@@ -26,7 +26,6 @@ class VehicleController extends Controller
 			return view('vehicle.create.invalid');
 		
 		$validated = $validator->validated();
-
 		$modelId = $validated['modelId'];
 		$position = new Vec3(
 			$validated['posX'],
@@ -50,7 +49,17 @@ class VehicleController extends Controller
 
 	public function destroyOne(Request $request):View
 	{
-		$vehicleId = (int) $request->input('vehicleId');
+		$validator = Validator::make($request->all(), [
+			'vehicleId' => 'required|exists:vehicle'
+		], [
+			'vehicleId.required' => 'Vehicle ID is required.'
+		]);
+		if($validator->fails())
+			return view('vehicle.destroy.invalid');
+		
+		$validated = $validator->validated();
+		$vehicleId = $validated['vehicleId'];
+
 		if(!Vehicle::isVehicleId($vehicleId))
 			return view('vehicle.destroy.invalid');
 		
@@ -63,9 +72,8 @@ class VehicleController extends Controller
 	// fetch
 	public function showAll():View
 	{
-		$vehicle = new Vehicle();
-		$vehicles = $vehicle->get();
-		$vehicleModelCounts = $vehicle->getModelCounts();
+		$vehicles = Vehicle::get();
+		$vehicleModelCounts = Vehicle::getModelCounts();
 
 		return view('vehicle.show.all', [
 			'vehicles' => $vehicles,
@@ -75,8 +83,22 @@ class VehicleController extends Controller
 
 	public function showOne(string $vehicleId):View
 	{
-		$vehicleId = (int) $vehicleId;
+		$validator = Validator::make([
+			'vehicleId' => $vehicleId
+		], [
+			'vehicleId' => 'required|exists:vehicle'
+		], [
+			'vehicleId.required' => 'Vehicle ID is required.'
+		]);
+		if($validator->fails())
+			return view('vehicle.show.one-invalid');
+		
+		$validated = $validator->validated();
+		$vehicleId = $validated['vehicleId'];
 
+		if(!Vehicle::isVehicleId($vehicleId))
+			return view('vehicle.show.one-invalid');
+		
 		$vehicle = Vehicle::getVehicle($vehicleId);
 		if(!$vehicle)
 			return view('vehicle.show.one-invalid');
