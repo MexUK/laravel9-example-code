@@ -31,5 +31,8 @@ Route::controller(VehicleController::class)->group(function()
     Route::get('/vehicle/show/all', 'showAll');
     Route::get('/vehicle/show/ids', 'showIds');
     Route::get('/vehicle/show/{id}', 'showOne');
+
+    Route::get('json/vehicle/show/all', 'showAllJson');
+    Route::get('json/vehicle/show/{id}', 'showOneJson');
 });
 

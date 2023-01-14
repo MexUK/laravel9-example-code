@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Vec3;
 use App\Models\Vehicle;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -100,7 +101,7 @@ class VehicleController extends Controller
 		]);
 	}
 
-	public function showOne(string $vehicleId):View
+	public function showOne(int $vehicleId):View
 	{
 		$validator = Validator::make([
 			'vehicleId' => $vehicleId
@@ -125,6 +126,40 @@ class VehicleController extends Controller
 		return view('vehicle.show.one', [
 			'vehicle' => $vehicle
 		]);
+	}
+
+	public function showAllJson():JsonResponse
+	{
+		$vehicles = Vehicle::get();
+
+		return response()
+			->json($vehicles);
+	}
+
+	public function showOneJson(int $vehicleId):JsonResponse|View
+	{
+		$validator = Validator::make([
+			'vehicleId' => $vehicleId
+		], [
+			'vehicleId' => 'required|exists:vehicle'
+		], [
+			'vehicleId.required' => 'Vehicle ID is required.'
+		]);
+		if($validator->fails())
+			return view('vehicle.show.one-invalid');
+		
+		$validated = $validator->validated();
+		$vehicleId = $validated['vehicleId'];
+
+		if(!Vehicle::isVehicleId($vehicleId))
+			return view('vehicle.show.one-invalid');
+		
+		$vehicle = Vehicle::getVehicle($vehicleId);
+		if(!$vehicle)
+			return view('vehicle.show.one-invalid');
+
+		return response()
+			->json($vehicle);
 	}
 };
 
