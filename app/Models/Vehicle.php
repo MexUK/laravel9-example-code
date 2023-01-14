@@ -5,6 +5,7 @@ use App\Models\Vec3;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 enum EVehicleLockType:int
 {
@@ -132,5 +133,66 @@ class Vehicle extends Entity
 	public function getLockAttribute():EVehicleLockType
 	{
 		return EVehicleLockType::from($this->vehicleLocked);
+	}
+
+	// validation
+	public static function validateVehicleId(int|null $vehicleId):array|false
+	{
+		$validator = Validator::make([
+			'vehicleId' => $vehicleId
+		], [
+			'vehicleId' => 'required|exists:vehicle'
+		], [
+			'vehicleId.required' => 'Vehicle ID is either missing or invalid.'
+		]);
+		
+		if($validator->fails())
+			return false;
+		
+		return $validator->validated();
+	}
+
+	public static function validateVehicleData(array $newData = null):array|false
+	{
+		$validator = Validator::make($newData, [
+			'vehicleModel' => [
+				'required',
+				'int',
+				'between:90,100',
+				Rule::notIn([98])
+			],
+			'vehiclePosX' => 'required|numeric|between:-20000.0,20000.0',
+			'vehiclePosY' => 'required|numeric|between:-20000.0,20000.0',
+			'vehiclePosZ' => 'required|numeric|between:-20000.0,20000.0',
+			'vehicleHeading' => 'required|numeric|between:-'.pi().','.pi()
+		], [
+			'vehicleModel.required' => 'Model ID is required.',
+			'vehiclePosX.required' => 'X position is required.',
+			'vehiclePosY.required' => 'Y position is required.',
+			'vehiclePosZ.required' => 'Z position is required.',
+			'vehicleHeading.required' => 'Heading is required.'
+		]);
+		if($validator->fails())
+			return false;
+		
+		return $validator->validated();
+	}
+
+	public static function validateVehicleIdRequest(Request $request):array|false
+	{
+		if($request->has('vehicleId'))
+			$vehicleId = $request->input('vehicleId');
+		else
+			$vehicleId = null;
+
+		return self::validateVehicleId($vehicleId);
+	}
+
+	public static function validateVehicleDataRequest(Request $request, array $newData = null):array|false
+	{
+		if($newData === null)
+			$newData = $request->all();
+
+		return self::validateVehicleData($newData);
 	}
 };

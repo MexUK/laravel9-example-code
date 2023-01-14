@@ -6,7 +6,6 @@ use App\Models\Vec3;
 use App\Models\Vehicle;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
@@ -15,38 +14,20 @@ class VehicleController extends Controller
 	// create/destroy
 	public function createOne(Request $request):View
 	{
-		$validator = Validator::make($request->all(), [
-			'modelId' => [
-				'required',
-				'int',
-				'between:90,100',
-				Rule::notIn([98])
-			],
-			'posX' => 'required|numeric|between:-20000.0,20000.0',
-			'posY' => 'required|numeric|between:-20000.0,20000.0',
-			'posZ' => 'required|numeric|between:-20000.0,20000.0',
-			'heading' => 'required|numeric|between:-'.pi().','.pi()
-		], [
-			'modelId.required' => 'Model ID is required.',
-			'posX.required' => 'X position is required.',
-			'posY.required' => 'Y position is required.',
-			'posZ.required' => 'Z position is required.',
-			'heading.required' => 'Heading is required.'
-		]);
-		if($validator->fails())
+		$validated = Vehicle::validateVehicleDataRequest($request);
+		if(!$validated)
 			return view('vehicle.create.invalid');
-		
-		$validated = $validator->validated();
-		$modelId = $validated['modelId'];
+
+		$modelId = $validated['vehicleModel'];
 		$position = new Vec3(
-			$validated['posX'],
-			$validated['posY'],
-			$validated['posZ']
+			$validated['vehiclePosX'],
+			$validated['vehiclePosY'],
+			$validated['vehiclePosZ']
 		);
 		$rotation = new Vec3(
 			0.0,
 			0.0,
-			$validated['heading']
+			$validated['vehicleHeading']
 		);
 
 		$vehicle = Vehicle::createVehicle($modelId, $position, $rotation);
@@ -60,7 +41,7 @@ class VehicleController extends Controller
 
 	public function destroyOne(Request $request):View
 	{
-		$validated = self::validateVehicleId($request->input('vehicleId'));
+		$validated = Vehicle::validateVehicleIdRequest($request);
 		if(!$validated)
 			return view('vehicle.destroy.invalid');
 		
@@ -74,7 +55,7 @@ class VehicleController extends Controller
 		return view('vehicle.destroy.success');
 	}
 
-	// fetch
+	// fetch - txt
 	public function showAll():View
 	{
 		$vehicles = Vehicle::get();
@@ -88,7 +69,7 @@ class VehicleController extends Controller
 
 	public function showOne(int $vehicleId):View
 	{
-		$validated = self::validateVehicleId($vehicleId);
+		$validated = Vehicle::validateVehicleId($vehicleId);
 		if(!$validated)
 			return view('vehicle.show.one-invalid');
 		
@@ -105,7 +86,7 @@ class VehicleController extends Controller
 		]);
 	}
 
-	// csv
+	// fetch - csv
 	public function showIds():View
 	{
 		$vehicleIdsStr = Vehicle::getIdsString();
@@ -115,7 +96,7 @@ class VehicleController extends Controller
 		]);
 	}
 
-	// json
+	// fetch - json
 	public function showAllJson():JsonResponse
 	{
 		$vehicles = Vehicle::get();
@@ -126,7 +107,7 @@ class VehicleController extends Controller
 
 	public function showOneJson(int $vehicleId):JsonResponse|View
 	{
-		$validated = self::validateVehicleId($vehicleId);
+		$validated = Vehicle::validateVehicleId($vehicleId);
 		if(!$validated)
 			return view('vehicle.show.one-invalid');
 		
@@ -142,21 +123,27 @@ class VehicleController extends Controller
 			->json($vehicle);
 	}
 
-	// validation
-	private function validateVehicleId(int $vehicleId):array|false
+	// update
+	public function updateOne(Request $request):View
 	{
-		$validator = Validator::make([
-			'vehicleId' => $vehicleId
-		], [
-			'vehicleId' => 'required|exists:vehicle'
-		], [
-			'vehicleId.required' => 'Vehicle ID is either missing or invalid.'
-		]);
+		$validated1 = Vehicle::validateVehicleIdRequest($request);
+		if(!$validated1)
+			return view('vehicle.update.invalid-id');
 		
-		if($validator->fails())
-			return false;
+		$validated2 = Vehicle::validateVehicleDataRequest($request);
+		if(!$validated2)
+			return view('vehicle.update.invalid-data');
 		
-		return $validator->validated();
+		$validated = [...$validated1, ...$validated2];
+
+		$vehicleId = $validated['vehicleId'];
+		if(!Vehicle::isVehicleId($vehicleId))
+			return view('vehicle.update.invalid');
+		
+		if(!Vehicle::updateVehicle($vehicleId, $validated))
+			return view('vehicle.update.failed');
+		
+		return view('vehicle.update.success');
 	}
 };
 

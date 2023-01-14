@@ -32,6 +32,8 @@ Route::controller(VehicleController::class)->group(function()
     Route::get('/vehicle/show/ids', 'showIds');
     Route::get('/vehicle/show/{id}', 'showOne');
 
+    Route::post('vehicle/update', 'updateOne');
+
     Route::get('json/vehicle/show/all', 'showAllJson');
     Route::get('json/vehicle/show/{id}', 'showOneJson');
 });
