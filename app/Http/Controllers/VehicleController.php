@@ -60,17 +60,11 @@ class VehicleController extends Controller
 
 	public function destroyOne(Request $request):View
 	{
-		$validator = Validator::make($request->all(), [
-			'vehicleId' => 'required|exists:vehicle'
-		], [
-			'vehicleId.required' => 'Vehicle ID is required.'
-		]);
-		if($validator->fails())
+		$validated = self::validateVehicleId($request->input('vehicleId'));
+		if(!$validated)
 			return view('vehicle.destroy.invalid');
 		
-		$validated = $validator->validated();
 		$vehicleId = $validated['vehicleId'];
-
 		if(!Vehicle::isVehicleId($vehicleId))
 			return view('vehicle.destroy.invalid');
 		
@@ -92,30 +86,13 @@ class VehicleController extends Controller
 		]);
 	}
 
-	public function showIds():View
-	{
-		$vehicleIdsStr = Vehicle::getIdsString();
-
-		return view('vehicle.show.ids', [
-			'vehicleIdsStr' => $vehicleIdsStr
-		]);
-	}
-
 	public function showOne(int $vehicleId):View
 	{
-		$validator = Validator::make([
-			'vehicleId' => $vehicleId
-		], [
-			'vehicleId' => 'required|exists:vehicle'
-		], [
-			'vehicleId.required' => 'Vehicle ID is required.'
-		]);
-		if($validator->fails())
+		$validated = self::validateVehicleId($vehicleId);
+		if(!$validated)
 			return view('vehicle.show.one-invalid');
 		
-		$validated = $validator->validated();
 		$vehicleId = $validated['vehicleId'];
-
 		if(!Vehicle::isVehicleId($vehicleId))
 			return view('vehicle.show.one-invalid');
 		
@@ -128,6 +105,17 @@ class VehicleController extends Controller
 		]);
 	}
 
+	// csv
+	public function showIds():View
+	{
+		$vehicleIdsStr = Vehicle::getIdsString();
+
+		return view('vehicle.show.ids', [
+			'vehicleIdsStr' => $vehicleIdsStr
+		]);
+	}
+
+	// json
 	public function showAllJson():JsonResponse
 	{
 		$vehicles = Vehicle::get();
@@ -138,19 +126,11 @@ class VehicleController extends Controller
 
 	public function showOneJson(int $vehicleId):JsonResponse|View
 	{
-		$validator = Validator::make([
-			'vehicleId' => $vehicleId
-		], [
-			'vehicleId' => 'required|exists:vehicle'
-		], [
-			'vehicleId.required' => 'Vehicle ID is required.'
-		]);
-		if($validator->fails())
+		$validated = self::validateVehicleId($vehicleId);
+		if(!$validated)
 			return view('vehicle.show.one-invalid');
 		
-		$validated = $validator->validated();
 		$vehicleId = $validated['vehicleId'];
-
 		if(!Vehicle::isVehicleId($vehicleId))
 			return view('vehicle.show.one-invalid');
 		
@@ -160,6 +140,23 @@ class VehicleController extends Controller
 
 		return response()
 			->json($vehicle);
+	}
+
+	// validation
+	private function validateVehicleId(int $vehicleId):array|false
+	{
+		$validator = Validator::make([
+			'vehicleId' => $vehicleId
+		], [
+			'vehicleId' => 'required|exists:vehicle'
+		], [
+			'vehicleId.required' => 'Vehicle ID is either missing or invalid.'
+		]);
+		
+		if($validator->fails())
+			return false;
+		
+		return $validator->validated();
 	}
 };
 
