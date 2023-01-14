@@ -91,6 +91,15 @@ class VehicleController extends Controller
 		]);
 	}
 
+	public function showIds():View
+	{
+		$vehicleIdsStr = Vehicle::getIdsString();
+
+		return view('vehicle.show.ids', [
+			'vehicleIdsStr' => $vehicleIdsStr
+		]);
+	}
+
 	public function showOne(string $vehicleId):View
 	{
 		$validator = Validator::make([

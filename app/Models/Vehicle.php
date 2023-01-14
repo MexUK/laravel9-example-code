@@ -65,7 +65,7 @@ class Vehicle extends Entity
 	// create/destroy
 	public static function createVehicle(int $modelId, Vec3 &$position, Vec3 &$rotation):Vehicle|null
 	{
-		$vehicle = new Vehicle();
+		$vehicle = new self();
 		$vehicle->vehicleModel = $modelId;
 		$vehicle->vehiclePosX = $position->x;
 		$vehicle->vehiclePosY = $position->y;
@@ -77,7 +77,7 @@ class Vehicle extends Entity
 
 	public static function destroyVehicle(int $vehicleId):bool
 	{
-		$vehicle = Vehicle::find($vehicleId);
+		$vehicle = self::find($vehicleId);
 		if($vehicle)
 		{
 			$vehicle->delete();
@@ -89,29 +89,36 @@ class Vehicle extends Entity
 	// fetch
 	public static function getVehicle(int $vehicleId):Vehicle|null
 	{
-		return Vehicle::where('vehicleId', '=', $vehicleId)
+		return self::where('vehicleId', '=', $vehicleId)
 			->first();
 	}
 
 	public static function isVehicleId(int $vehicleId):bool
 	{
-		return Vehicle::where('vehicleId', '=', $vehicleId)
+		return self::where('vehicleId', '=', $vehicleId)
 			->exists();
 	}
 
 	public static function getModelCounts():Collection
 	{
-		return Vehicle::select('vehicleModel', DB::raw('count(*) as vehicleModelCount'))
+		return self::select('vehicleModel', DB::raw('count(*) as vehicleModelCount'))
 			->orderBy('vehicleModelCount', 'desc')
 			->orderBy('vehicleModel', 'asc')
 			->groupBy('vehicleModel')
 			->get();
 	}
 
+	public static function getIdsString():string
+	{
+		return self::select(DB::raw("GROUP_CONCAT(vehicleId SEPARATOR ',') as vehicleIdsStr"))
+			->first()
+			->vehicleIdsStr;
+	}
+
 	// update
 	public static function updateVehicle(int $vehicleId, array $newData):bool
 	{
-		return Vehicle::where('vehicleId', '=', $vehicleId)
+		return self::where('vehicleId', '=', $vehicleId)
 			->update($newData);
 	}
 

@@ -29,6 +29,7 @@ Route::controller(VehicleController::class)->group(function()
         return redirect('/vehicle/show/all');
     });
     Route::get('/vehicle/show/all', 'showAll');
+    Route::get('/vehicle/show/ids', 'showIds');
     Route::get('/vehicle/show/{id}', 'showOne');
 });
 
